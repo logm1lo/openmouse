@@ -44,6 +44,33 @@ let mice: Mouse[] = MICE;
 let brandDirty = false;
 let tagsDirty = false;
 
+// ── Collapsed brand groups ───────────────────────────────────────────────
+const COLLAPSED_KEY = "openmouse.collapsedBrands";
+
+function getCollapsedBrands(): Set<string> {
+  try {
+    const raw = localStorage.getItem(COLLAPSED_KEY);
+    return new Set(raw ? (JSON.parse(raw) as string[]) : []);
+  } catch {
+    return new Set();
+  }
+}
+
+function setCollapsedBrands(brands: Set<string>): void {
+  try {
+    localStorage.setItem(COLLAPSED_KEY, JSON.stringify([...brands]));
+  } catch {
+    // localStorage unavailable (private mode, etc.); collapse state just won't persist.
+  }
+}
+
+function toggleBrandCollapsed(brand: string): void {
+  const collapsed = getCollapsedBrands();
+  if (collapsed.has(brand)) collapsed.delete(brand);
+  else collapsed.add(brand);
+  setCollapsedBrands(collapsed);
+}
+
 // ── Helpers ───────────────────────────────────────────────────────────────
 function counts(): Record<string, number> {
   const c: Record<string, number> = { all: 0 };
@@ -387,11 +414,14 @@ function renderList(): void {
     return rb - ra || a.localeCompare(b);
   });
 
+  const collapsed = getCollapsedBrands();
+
   el.innerHTML = sortedBrands.map(brand => {
     const items = groups[brand].sort((a, b) =>
       STATUS[a.status].order - STATUS[b.status].order || b.req - a.req,
     );
     const totalReq = items.reduce((s, m) => s + m.req, 0);
+    const isCollapsed = collapsed.has(brand);
 
     const rows = items.map(m =>
       `<tr>
@@ -402,14 +432,30 @@ function renderList(): void {
       </tr>`
     ).join("");
 
-    return `<div class="brand-group" id="brand-${brandSlug(brand)}">
-      <div class="brand-header">${brand}${totalReq > 0 ? ` <span class="brand-reqs">(${totalReq} request${totalReq === 1 ? "" : "s"})</span>` : ""}</div>
+    return `<div class="brand-group${isCollapsed ? " collapsed" : ""}" id="brand-${brandSlug(brand)}" data-brand="${brand.replace(/"/g, "&quot;")}">
+      <button type="button" class="brand-header" aria-expanded="${!isCollapsed}">
+        <svg class="brand-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        <span>${brand}</span>
+        <span class="brand-count-total">${items.length}</span>
+        ${totalReq > 0 ? `<span class="brand-reqs">(${totalReq} request${totalReq === 1 ? "" : "s"})</span>` : ""}
+      </button>
       <table class="device-table">
         <thead><tr><th>Status</th><th>Model</th><th>Notes</th><th style="text-align:right">Votes</th></tr></thead>
         <tbody>${rows}</tbody>
       </table>
     </div>`;
   }).join("");
+
+  el.querySelectorAll<HTMLButtonElement>(".brand-header").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const group = btn.closest<HTMLElement>(".brand-group");
+      const brand = group?.dataset.brand;
+      if (!brand) return;
+      const nowCollapsed = group.classList.toggle("collapsed");
+      btn.setAttribute("aria-expanded", String(!nowCollapsed));
+      toggleBrandCollapsed(brand);
+    });
+  });
 }
 
 // ── Wiring ────────────────────────────────────────────────────────────────
