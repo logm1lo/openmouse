@@ -24,6 +24,8 @@ export type PulsarToggleSetting =
   | "rippleControl"
   | "performanceMode"
   | "hyperMode"
+  | "turboMode"
+  | "buttonCombination"
   | "longRangeMode";
 
 export interface TeevolutionProfile {

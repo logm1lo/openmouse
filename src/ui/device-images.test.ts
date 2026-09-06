@@ -203,6 +203,14 @@ test("test-needed and unsupported models are not given new artwork", () => {
   assert.equal(deviceImage(null, "Razer Viper 8KHz"), CDN + "unknown-device.png");
 });
 
+test("a mouse behind a shared WLMouse receiver resolves by name", () => {
+  // 0xa882 is the 1K receiver's own id; the model comes from the driver's name.
+  const receiver = { vendorId: 0x36a7, productId: 0xa882 } as HIDDevice;
+  assert.equal(deviceImage(receiver, "WLmouse Beast Max"), CDN + "wlmouse-beast-max.png");
+  assert.equal(deviceImage(receiver, "WLmouse Beast G"), CDN + "wlmouse-beast-g.png");
+  assert.equal(deviceImage(receiver, "WLmouse Beast Mini"), CDN + "unknown-device.png");
+});
+
 test("K-snake X11 wired and dongle share the same artwork", () => {
   const wired = { vendorId: 0xa8a4, productId: 0x2255 } as HIDDevice;
   const dongle = { vendorId: 0xa8a5, productId: 0x2255 } as HIDDevice;

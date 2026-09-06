@@ -3108,6 +3108,8 @@ function settingLabel(setting: PulsarToggleSetting): string {
     rippleControl: "ripple control",
     performanceMode: teevolutionClient() ? "highest performance" : "performance mode",
     hyperMode: "Hyper mode",
+    turboMode: "turbo mode",
+    buttonCombination: "button combinations",
     longRangeMode: "ultra long range",
   } as const)[setting];
 }
@@ -3118,6 +3120,8 @@ const PULSAR_TOGGLE_METHOD: Record<PulsarToggleSetting, string> = {
   rippleControl: "setRippleControl",
   performanceMode: "setPerformanceMode",
   hyperMode: "setHyperMode",
+  turboMode: "setTurboMode",
+  buttonCombination: "setButtonCombination",
   longRangeMode: "setLongRangeMode",
 };
 
@@ -3134,6 +3138,26 @@ export function applyPulsarToggle(setting: PulsarToggleSetting, enabled: boolean
       status[setting] = enabled;
     },
     apply: () => callClientMethod(method, label, enabled),
+  });
+}
+
+/**
+ * Sensor angle in degrees. Pulsar Pro reaches the same setting through
+ * `applyProSetting`, which also carries settings only that protocol has.
+ */
+export function applyAngleTuning(degrees: number): void {
+  if (!hasActiveClient()) return;
+  stageChange({
+    key: "angle-tuning",
+    label: `Angle tune ${degrees}°`,
+    command: `Set the sensor angle to ${degrees}°`,
+    progress: `Setting the sensor angle to ${degrees}°…`,
+    preview: (status) => {
+      status.angleTuning = degrees;
+    },
+    apply: async () => {
+      await requireClientMethod("setAngleTuning", "angle tuning").setAngleTuning(degrees);
+    },
   });
 }
 
@@ -3501,20 +3525,6 @@ export function applyPowerMode(mode: string): void {
     preview: (status) => { status.powerMode = mode; },
     apply: async () => {
       await requireClientMethod("setPowerMode", "the performance mode").setPowerMode(mode);
-    },
-  });
-}
-
-/** Set sensor angle tuning on any driver that exposes `setAngleTuning`. */
-export function applyAngleTuning(degrees: number): void {
-  stageChange({
-    key: "angle-tuning",
-    label: `Angle tuning ${degrees}00b0`,
-    command: "Change the angle tuning",
-    progress: "Changing angle tuning…",
-    preview: (status) => { status.angleTuning = degrees; },
-    apply: async () => {
-      await requireClientMethod("setAngleTuning", "angle tuning").setAngleTuning(degrees);
     },
   });
 }
