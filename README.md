@@ -26,7 +26,15 @@ If a device appears in Chromium's picker but OpenMouse reports `Failed to open
 the device`, check the permissions on its `/dev/hidraw*` nodes. Linux does not
 grant user access to every HID device by default.
 
-For the VXE R1 SE+ and its 1K receiver, install this narrowly scoped udev rule:
+First inspect the connected device IDs:
+
+```bash
+lsusb
+```
+
+VXE R1 SE+ hardware ships with more than one receiver implementation. If the
+mouse and 1K receiver appear as `3554:f58f` and `3554:f58e`, respectively,
+install these narrowly scoped rules:
 
 ```udev
 SUBSYSTEM=="hidraw", ATTRS{idVendor}=="3554", ATTRS{idProduct}=="f58f", TAG+="uaccess"
