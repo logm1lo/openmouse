@@ -3529,20 +3529,6 @@ export function applyPowerMode(mode: string): void {
   });
 }
 
-/** Set sensor angle tuning on any driver that exposes `setAngleTuning`. */
-export function applyAngleTuning(degrees: number): void {
-  stageChange({
-    key: "angle-tuning",
-    label: `Angle tuning ${degrees}00b0`,
-    command: "Change the angle tuning",
-    progress: "Changing angle tuning…",
-    preview: (status) => { status.angleTuning = degrees; },
-    apply: async () => {
-      await requireClientMethod("setAngleTuning", "angle tuning").setAngleTuning(degrees);
-    },
-  });
-}
-
 /**
  * Reassign a physical button on any driver that exposes `setButtonMapping`.
  * Named for the device-level map to keep it distinct from `applyButtonMapping`
