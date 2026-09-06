@@ -32,6 +32,9 @@ import {
   NinjutsoSensorCard,
   ProcessingCard,
   RazerButtonCard,
+  ButtonMappingCard,
+  PowerModeCard,
+  OnboardProfileCard,
   PulsarProCard,
   SignalCard,
   SleepCard,
@@ -148,6 +151,12 @@ function Workspace({
     show(has.atkButtons, ["buttons"]) ? <AtkButtonCard key="atk-buttons" snapshot={snapshot} /> : null,
     show(has.atkProfile, ["profiles"]) ? <AtkProfileCard key="atk-profile" snapshot={snapshot} /> : null,
     show(has.atkReceiver, ["advanced"]) ? <AtkReceiverCard key="atk-receiver" snapshot={snapshot} /> : null,
+    show(has.powerMode, ["performance"])
+      ? <PowerModeCard key="power-mode" snapshot={snapshot} /> : null,
+    show(has.buttonMapping, ["buttons"])
+      ? <ButtonMappingCard key="button-mapping" snapshot={snapshot} /> : null,
+    show(has.onboardProfiles, ["profiles"])
+      ? <OnboardProfileCard key="onboard-profile" snapshot={snapshot} /> : null,
     show(has.pulsarPro, ["profiles"]) ? <PulsarProCard key="pulsarpro" snapshot={snapshot} /> : null,
   ].filter((node) => node !== null);
 
