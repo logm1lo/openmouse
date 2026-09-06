@@ -135,6 +135,9 @@ const DEVICE_IMAGES: ReadonlyMap<string, string> = new Map([
   ["1532:00b8", "razer-viper-v3-hyperspeed.png"],
   ["1532:00e5", "razer-viper-v4-pro.png"],
   ["1532:00e6", "razer-viper-v4-pro.png"],
+  // K-snake X11 wired / 2.4 GHz dongle share the same shell.
+  ["a8a4:2255", "ksnake-x11.png"],
+  ["a8a5:2255", "ksnake-x11.png"],
 ]);
 
 function deviceKey(device: HIDDevice): string {
@@ -195,6 +198,8 @@ function resolveDeviceImageFilename(device: HIDDevice | null | undefined, displa
   if (/\bsword\s*x\b/i.test(displayName)) return "wlmouse-sword-x.png";
   if (/\bdragonfly\s*f2\b/i.test(displayName)) return "vgn-dragonfly-f2.png";
   if (/\bmaya\s*x\b/i.test(displayName)) return "lamzu-maya-x.png";
+  if (/\bk-snake\b/i.test(displayName)) return "ksnake-x11.png";
+  if (/\bx11\b/i.test(displayName)) return "ksnake-x11.png";
   if (/\bf1\s*v2\b/i.test(displayName)) return "atk-f1-v2-ultra-max.png";
   // Catches any A7 V2 variant whose product id is not pinned above.
   if (/\ba7\s*v2\b/i.test(displayName)) return "mchose-a7-v2.png";
